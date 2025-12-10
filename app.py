@@ -269,8 +269,6 @@ def create_user():
     if request.method == 'OPTIONS':
         return {'status': 'preflight'}
     
-    print(f"DEBUG create_user called with data: {request.json}")  # ADD THIS LINE
-    
     try:
         data = request.json
         username = data.get('username', '').strip()
@@ -278,6 +276,8 @@ def create_user():
         full_name = data.get('fullName', '').strip()
         is_admin = data.get('isAdmin', False)
         instance_id = data.get('instanceId', 1)
+        
+        print(f"DEBUG: Creating user - Username: '{username}', Instance: {instance_id}")
         
         if not username or not password:
             return {"success": False, "error": "Username and password required"}, 400
@@ -291,6 +291,20 @@ def create_user():
         conn, cursor = get_db()
         
         try:
+            # Check if username already exists in this instance
+            cursor.execute("""
+                SELECT id FROM users 
+                WHERE username = %s AND instance_id = %s
+            """, (username, instance_id))
+            
+            existing_user = cursor.fetchone()
+            
+            if existing_user:
+                cursor.close()
+                conn.close()
+                return {"success": False, "error": f"Username '{username}' already exists in this instance"}, 400
+            
+            # Insert new user
             cursor.execute("""
                 INSERT INTO users (instance_id, username, password_hash, full_name, is_admin)
                 VALUES (%s, %s, %s, %s, %s)
@@ -310,18 +324,15 @@ def create_user():
         except Exception as e:
             conn.rollback()
             error_msg = str(e)
-            if "duplicate key" in error_msg.lower() or "unique constraint" in error_msg.lower():
-                return {"success": False, "error": "Username already exists"}, 400
-            else:
-                return {"success": False, "error": error_msg}, 400
+            print(f"ERROR in user creation: {error_msg}")
+            return {"success": False, "error": f"Database error: {error_msg}"}, 400
         finally:
             cursor.close()
             conn.close()
             
     except Exception as e:
         print(f"Create user error: {e}")
-        return {"success": False, "error": str(e)}, 500
-    
+        return {"success": False, "error": str(e)}, 500    
 
 @app.route('/api/users/list', methods=['GET', 'OPTIONS'])
 @cors_headers
