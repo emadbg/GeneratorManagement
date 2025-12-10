@@ -1511,8 +1511,8 @@ async function resetUserPassword(username) {
 }
 
 
-// Handle create user form submission
-document.getElementById('createUserForm')?.addEventListener('submit', async function(e) {
+// Replace the entire form submit handler with this:
+document.getElementById('createUserForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const username = document.getElementById('newUsername').value.trim();
@@ -1540,7 +1540,8 @@ document.getElementById('createUserForm')?.addEventListener('submit', async func
                 username: username,
                 password: password,
                 fullName: fullName,
-                isAdmin: isAdmin
+                isAdmin: isAdmin,
+                instanceId: window.userInfo ? window.userInfo.instanceId : 1
             })
         });
         
@@ -1562,7 +1563,6 @@ document.getElementById('createUserForm')?.addEventListener('submit', async func
         showStatus('❌ Error creating user: ' + error.message, 'error', statusEl);
     }
 });
-
 
     async function loadClients() {
         const clientsTab = document.getElementById('clientsTab');

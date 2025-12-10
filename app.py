@@ -269,6 +269,8 @@ def create_user():
     if request.method == 'OPTIONS':
         return {'status': 'preflight'}
     
+    print(f"DEBUG create_user called with data: {request.json}")  # ADD THIS LINE
+    
     try:
         data = request.json
         username = data.get('username', '').strip()
