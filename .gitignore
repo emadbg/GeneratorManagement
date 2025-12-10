@@ -1,0 +1,36 @@
+# Backup folders
+Backup/
+MySQL/
+PostgreSQL Work/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# Database files
+*.sql
+database_schema.json
+database_schema.sql
+check_db.py
+export_db.py
+export_schema.py
+migrate_to_postgres.py
+create_postgres_tables.sql
+fix_sequences.py
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
