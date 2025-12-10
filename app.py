@@ -20,8 +20,11 @@ def get_db():
     """
     DATABASE_URL = os.environ.get('DATABASE_URL')
     
+    print(f"DEBUG: DATABASE_URL = {DATABASE_URL[:50] if DATABASE_URL else 'NOT SET'}...")  # Debug line
+    
     if DATABASE_URL:
         # Production (Railway)
+        # IMPORTANT: Railway requires sslmode='require'
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     else:
         # Development (your local PC)
@@ -29,7 +32,7 @@ def get_db():
             host="localhost",
             database="generator_payments",
             user="postgres",
-            password="Database2025",
+            password="Database2025",  # Your local password
             port="5432"
         )
     
